@@ -9,6 +9,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        background: "#160C28",
+      },
       fontFamily: {
         sans: ["var(--font-ibm-plex)", ...fontFamily.sans],
       },

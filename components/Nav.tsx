@@ -13,7 +13,17 @@ export default function Nav() {
           height={2200}
         />
       </Link>
-      <section className="flex flex-row gap-8 items-center"></section>
+      <section className="flex flex-row gap-8 items-center">
+        <Link href="/login" className="font-semibold">
+          Login
+        </Link>
+        <Link
+          href="/sign-up"
+          className="font-semibold text-slate-100 bg-slate-900 py-2 px-6 rounded-md"
+        >
+          Sign up
+        </Link>
+      </section>
     </nav>
   );
 }

@@ -1,13 +1,29 @@
-interface MenuLinkProps {
+import { useRouter } from "next/router";
+import Link from "next/link";
+
+interface MenuLinkProps extends React.PropsWithChildren {
   title: string;
-  icon: string;
 }
 
 export default function MenuLink(props: MenuLinkProps) {
+  const router = useRouter();
+  console.log(router.pathname);
+  console.log(props.title.toLowerCase());
+
   return (
-    <div>
-      <ion-icon name={props.icon}></ion-icon>
-      <p>{props.title}</p>
-    </div>
+    <Link
+      href={`/${
+        props.title == "Dashboard" ? "" : "dashboard/"
+      }${props.title.toLowerCase()}`}
+      className={`flex flex-row items-center gap-4 py-2 px-4 rounded-lg ${
+        router.query.si == `${props.title.toLowerCase()}` ||
+        router.pathname == `/${props.title.toLowerCase()}`
+          ? "bg-background text-white"
+          : ""
+      }`}
+    >
+      {props.children}
+      <p className="font-normal">{props.title}</p>
+    </Link>
   );
 }
