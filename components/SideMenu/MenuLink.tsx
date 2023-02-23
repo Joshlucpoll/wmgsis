@@ -7,8 +7,6 @@ interface MenuLinkProps extends React.PropsWithChildren {
 
 export default function MenuLink(props: MenuLinkProps) {
   const router = useRouter();
-  console.log(router.pathname);
-  console.log(props.title.toLowerCase());
 
   return (
     <Link

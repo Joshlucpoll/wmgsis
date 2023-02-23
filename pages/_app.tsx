@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
+import { AnimatePresence } from "framer-motion";
 import { IBM_Plex_Sans } from "@next/font/google";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -12,7 +13,9 @@ const ibmPlexSans = IBM_Plex_Sans({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <main className={`${ibmPlexSans.variable} font-sans`}>
-      <Component {...pageProps} />
+      <AnimatePresence mode="wait" initial={false}>
+        <Component {...pageProps} />
+      </AnimatePresence>
     </main>
   );
 }
