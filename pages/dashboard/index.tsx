@@ -1,7 +1,10 @@
 import SideMenu from "@/components/SideMenu/SideMenu";
 import Head from "next/head";
+import axios from "axios";
 
 export default function Dashboard() {
+  // axios.get("/api/user/get");
+
   return (
     <>
       <Head>

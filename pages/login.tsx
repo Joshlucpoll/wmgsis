@@ -1,9 +1,13 @@
 import Head from "next/head";
 import Image from "next/image";
-import Link from "next/link";
 import Nav from "@/components/Nav";
+import axios from "axios";
+import { useState } from "react";
+import Router from "next/router";
 
-export default function Login() {
+export default function LoginPage() {
+  const [message, setMessage] = useState("");
+
   return (
     <div className="min-h-screen flex flex-col">
       <Head>
@@ -17,33 +21,54 @@ export default function Login() {
         width={1440}
       ></Image>
       <Nav></Nav>
-      <section className="flex-grow mb-36 flex flex-col gap-8 items-center justify-center">
-        <div className="outline outline-black bg-white rounded-md flex flex-row items-center justify-between w-1/3">
+      <form
+        className="flex-grow mb-36 flex flex-col gap-8 items-center justify-center w-1/2 max-w-lg mx-auto"
+        onSubmit={async (event) => {
+          event.preventDefault();
+
+          const email = event.target.email.value;
+          const password = event.target.password.value;
+
+          axios
+            .post("/api/auth/login", { email, password })
+            .then((res) => {
+              localStorage.setItem("access_token", res.data.access_token);
+              Router.push("/dashboard");
+            })
+            .catch((error) => {
+              console.log(error);
+              if (error.response.status == 400) {
+                setMessage("Wrong credentials");
+              }
+            });
+        }}
+      >
+        <div className="outline outline-black bg-white rounded-md flex flex-row items-center justify-between w-full">
           <input
             className="flex-grow p-4"
             type="text"
-            name="username"
-            id="username"
-            placeholder="username"
+            name="email"
+            id="email"
+            placeholder="email"
+            required
           />
           <p className="p-4 font-semibold">@warwick.ac.uk</p>
         </div>
-        <div className="outline outline-black bg-white rounded-md flex flex-row items-center justify-between w-1/3">
+        <div className="outline outline-black bg-white rounded-md flex flex-row items-center justify-between w-full">
           <input
             className="flex-grow p-4"
             type="password"
             name="password"
             id="password"
             placeholder="password"
+            required
           />
         </div>
-        <Link
-          href="/dashboard"
-          className="font-semibold text-slate-100 bg-slate-900 py-2 px-6 rounded-md"
-        >
+        <p className="text-red-500 font-semibold">{message}</p>
+        <button className="font-semibold text-slate-100 bg-slate-900 py-2 px-6 rounded-md">
           Login
-        </Link>
-      </section>
+        </button>
+      </form>
     </div>
   );
 }

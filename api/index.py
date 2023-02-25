@@ -5,25 +5,13 @@ from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
 )
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
+from datetime import timedelta
 import os
-import psycopg2
-
-PGHOST = os.getenv("PGHOST")
-PGDATABASE = os.getenv("PGDATABASE")
-PGUSER = os.getenv("PGUSER")
-PGPASSWORD = os.getenv("PGPASSWORD")
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-con = psycopg2.connect(
-    database=PGDATABASE,
-    user=PGUSER,
-    password=PGPASSWORD,
-    host=DATABASE_URL,
-    port="5432",
-)
+from .db import DB
 
 
+db = DB()
 app = Flask(__name__)
 app.config.update(
     JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY"),
@@ -31,36 +19,36 @@ app.config.update(
 
 jwt = JWTManager(app)
 
-users = {
-    "username": generate_password_hash("password"),
-}
 
-
-def getUsers(username):
-    cursor = con.cursor()
-    cursor.execute(f"SELECT * FROM users WHERE username = {username}")
-    result = cursor.fetchall()
-
-    return result
-
-
-@app.route("/api/login", methods=["POST"])
+@app.route("/api/auth/login", methods=["POST"])
 def login():
-    username = request.json.get("username")
+    email = request.json.get("email")
     password = request.json.get("password")
 
-    if username in users:
-        if check_password_hash(users.get(username), password):
-            access_token = create_access_token(identity=username)
+    hashedPass = db.getUserPass(email)
+
+    if hashedPass:
+        if check_password_hash(hashedPass, password):
+            access_token = create_access_token(
+                identity=email, expires_delta=timedelta(minutes=20)
+            )
             return jsonify(access_token=access_token), 200
 
     return "Wrong credentials", 400
 
 
-@app.route("/api/protected", methods=["GET"])
+@app.route("/api/auth/create-user", methods=["POST"])
+def createUser():
+    email = request.json.get("email")
+    password = request.json.get("password")
+
+    return db.createUser(email, password)
+
+
+@app.route("/api/user/get", methods=["GET"])
 @jwt_required()
-def protected():
-    return jsonify(logged_in_as=get_jwt_identity()), 200
+def getUser():
+    return jsonify(db.getUser(get_jwt_identity())), 200
 
 
 if __name__ == "__main__":
