@@ -24,13 +24,14 @@ export default function Login() {
         className="flex-grow mb-36 flex flex-col gap-8 items-center justify-center w-1/2 max-w-lg mx-auto"
         onSubmit={async (event) => {
           event.preventDefault();
+          const target = event.target as HTMLFormElement;
 
-          if (event.target.password.value != event.target.password2.value) {
+          if (target.password.value != target.password2.value) {
             setMessage("Passwords do not match");
           }
 
-          const email = event.target.email.value;
-          const password = event.target.password.value;
+          const email = target.email.value;
+          const password = target.password.value;
           axios
             .post("/api/auth/create-user", {
               email,

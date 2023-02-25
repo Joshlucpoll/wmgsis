@@ -26,8 +26,9 @@ export default function LoginPage() {
         onSubmit={async (event) => {
           event.preventDefault();
 
-          const email = event.target.email.value;
-          const password = event.target.password.value;
+          const target = event.target as HTMLFormElement;
+          const email = target.email.value;
+          const password = target.password.value;
 
           axios
             .post("/api/auth/login", { email, password })
