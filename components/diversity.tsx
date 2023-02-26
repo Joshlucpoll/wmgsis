@@ -21,7 +21,9 @@ function stringToFloat(str: string) {
 }
 
 export default function Diversity() {
-  const [diversityData, setDiversityData] = useState<object>({});
+  const [diversityData, setDiversityData] = useState<{ [key: string]: any }>(
+    {}
+  );
   const [attribute, setAttribute] = useState("gender");
   const [group, setGroup] = useState("WM161");
   const [options, setOptions] = useState<DiversityOptions>();

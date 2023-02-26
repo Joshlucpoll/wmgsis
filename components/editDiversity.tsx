@@ -28,7 +28,7 @@ export default function EditDiversity(props: { close: Function }) {
     );
   }, []);
 
-  async function updatePersonalDiversity(event) {
+  async function updatePersonalDiversity(event: any) {
     event.preventDefault();
 
     const target = event.target as HTMLFormElement;
