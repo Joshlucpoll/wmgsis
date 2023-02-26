@@ -25,7 +25,7 @@ export default function SideMenu() {
     getUser(localStorage.getItem("access_token")).then((currentUser: User) =>
       setUser(currentUser)
     );
-  });
+  }, []);
 
   return (
     <nav className="flex flex-col p-8">

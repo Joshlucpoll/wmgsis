@@ -6,6 +6,7 @@ export default function Nav() {
     <nav className="flex flex-row justify-between items-center p-12">
       <Link href="/">
         <Image
+          priority
           className="w-64"
           src="/img/logo.png"
           alt="WMGSIS"

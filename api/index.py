@@ -25,7 +25,11 @@ def login():
     email = request.json.get("email")
     password = request.json.get("password")
 
-    hashedPass = db.getUserPass(email)
+    try:
+        hashedPass = db.getUserPass(email)
+    except:
+        db.connect()
+        return "Database error", 500
 
     if hashedPass:
         if check_password_hash(hashedPass, password):
@@ -42,13 +46,83 @@ def createUser():
     email = request.json.get("email")
     password = request.json.get("password")
 
-    return db.createUser(email, password)
+    try:
+        return db.createUser(email, password)
+    except:
+        db.connect()
+        return "Database error", 500
 
 
 @app.route("/api/user/get", methods=["GET"])
 @jwt_required()
 def getUser():
-    return jsonify(db.getUser(get_jwt_identity())), 200
+    try:
+        return jsonify(db.getUser(get_jwt_identity())), 200
+    except:
+        db.connect()
+        return "Database error", 500
+
+
+@app.route("/api/diversity/get-options", methods=["GET"])
+@jwt_required()
+def getDiversityOptions():
+    try:
+        return jsonify(db.getDiversityOptions()), 200
+    except:
+        db.connect()
+        return "Database error", 500
+
+
+@app.route("/api/diversity/get-data", methods=["POST"])
+@jwt_required()
+def getDiversityData():
+    attribute = request.json.get("attribute")
+    group = request.json.get("group")
+
+    try:
+        res = db.getDiversityData(group, attribute)
+        if res:
+            return jsonify(res), 200
+
+        if res == None:
+            return "Could not process parameters", 400
+
+        if res == False:
+            return "Not authorised", 401
+
+    except:
+        db.connect()
+        return "Database error", 500
+
+
+@app.route("/api/diversity/get-personal", methods=["GET"])
+@jwt_required()
+def getPersonalDiversityData():
+    email = get_jwt_identity()
+    try:
+        res = db.getPersonalDiversityData(email)
+        if res:
+            return jsonify(res), 200
+
+    except:
+        db.connect()
+        return "Database error", 500
+
+
+@app.route("/api/diversity/set-personal", methods=["POST"])
+@jwt_required()
+def setPersonalDiversityData():
+    email = get_jwt_identity()
+    data = request.json
+
+    try:
+        res = db.setPersonalDiversityData(email, data)
+        if res:
+            return "Updated diversity data", 204
+
+    except:
+        db.connect()
+        return "Database error", 500
 
 
 if __name__ == "__main__":

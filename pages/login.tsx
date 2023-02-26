@@ -37,7 +37,6 @@ export default function LoginPage() {
               Router.push("/dashboard");
             })
             .catch((error) => {
-              console.log(error);
               if (error.response.status == 400) {
                 setMessage("Wrong credentials");
               }

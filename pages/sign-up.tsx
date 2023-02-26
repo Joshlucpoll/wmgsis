@@ -41,10 +41,8 @@ export default function Login() {
               localStorage.setItem("access_token", res.data.access_token);
             })
             .catch((error) => {
-              console.log(error.response.status);
               if (error.response.status == 409) {
                 setMessage("User already exists");
-                console.log("User already Exists");
               }
             });
         }}
