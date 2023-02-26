@@ -3,6 +3,7 @@ from flask import jsonify
 from flask_jwt_extended import create_access_token
 import psycopg2
 from psycopg2 import sql
+import unittest
 from werkzeug.security import generate_password_hash
 
 # load secrets to access the database with environment variables
@@ -178,3 +179,15 @@ class DB:
         )
         self.conn.commit()
         return True
+
+
+class TestDatabase(unittest.TestCase):
+    def testCreateUser(self):
+        db = DB()
+        self.assertEqual(db.createUser("new.user@example.com", 123)[1], 201)
+
+
+if __name__ == "__main__":
+    print("Enter test database url endpoint")
+    PGHOST = "ep-weathered-cloud-790588.eu-central-1.aws.neon.tech"
+    unittest.main()

@@ -7,6 +7,7 @@ import Router from "next/router";
 
 export default function LoginPage() {
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -24,7 +25,9 @@ export default function LoginPage() {
       <form
         className="flex-grow mb-36 flex flex-col gap-8 items-center justify-center w-1/2 max-w-lg mx-auto"
         onSubmit={async (event) => {
+          if (loading) return;
           event.preventDefault();
+          setLoading(true);
 
           const target = event.target as HTMLFormElement;
           const email = target.email.value;
@@ -33,11 +36,13 @@ export default function LoginPage() {
           axios
             .post("/api/auth/login", { email, password })
             .then((res) => {
+              setLoading(false);
               localStorage.setItem("access_token", res.data.access_token);
               Router.push("/dashboard");
             })
             .catch((error) => {
               if (error.response.status == 400) {
+                setLoading(false);
                 setMessage("Wrong credentials");
               }
             });
@@ -65,7 +70,14 @@ export default function LoginPage() {
         </div>
         <p className="text-red-500 font-semibold">{message}</p>
         <button className="font-semibold text-slate-100 bg-slate-900 py-2 px-6 rounded-md">
-          Login
+          {!loading && "Login"}
+          {loading && (
+            <img
+              className="inline w-8 mb-1"
+              src="/img/loading.gif"
+              alt="loading"
+            />
+          )}
         </button>
       </form>
     </div>
