@@ -52,7 +52,6 @@ export default function LoginPage() {
             placeholder="email"
             required
           />
-          <p className="p-4 font-semibold">@warwick.ac.uk</p>
         </div>
         <div className="outline outline-black bg-white rounded-md flex flex-row items-center justify-between w-full">
           <input
