@@ -6,6 +6,12 @@ from psycopg2 import sql
 import unittest
 from werkzeug.security import generate_password_hash
 
+
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
 # load secrets to access the database with environment variables
 PGHOST = os.getenv("PGHOST")
 PGDATABASE = os.getenv("PGDATABASE")
@@ -29,6 +35,7 @@ class DB:
             password=PGPASSWORD,
             host=PGHOST,
             port="5432",
+            sslmode="require",
         )
         # all actions are auto committed
         self.conn.set_session(autocommit=True)
@@ -182,12 +189,65 @@ class DB:
 
 
 class TestDatabase(unittest.TestCase):
-    def testCreateUser(self):
+    # def testCreateUser(self):
+    #     db = DB()
+    #     self.assertEqual(db.createUser("new.user@example.com", 123)[1], 201)
+
+    def testGetUser(self):
         db = DB()
-        self.assertEqual(db.createUser("new.user@example.com", 123)[1], 201)
+        self.assertEqual(
+            db.getUser("giorgio.testa@warwick.ac.uk"),
+            {
+                "authLevel": "user",
+                "email": "giorgio.testa@warwick.ac.uk",
+                "imageUrl": "https://cdn-icons-png.flaticon.com/512/17/17004.png",
+                "role": "Student",
+            },
+        )
+
+    def testGetDiversityData(self):
+        db = DB()
+        self.assertEqual(
+            list(db.getDiversityData("WM380", "gender").keys()),
+            ["Other", "Non-Binary", "Male", "Female"],
+        )
+
+    def testGetPersonalDiversityData(self):
+        db = DB()
+        self.assertEqual(
+            db.getPersonalDiversityData("giorgio.testa@warwick.ac.uk"),
+            {
+                "gender": "Male",
+                "race": "Asian",
+                "religion": "Christianity",
+                "sexuality": "Straight",
+                "disability": False,
+            },
+        )
+
+    def testGetDiversityOption(self):
+        db = DB()
+        self.assertEqual(
+            db.getDiversityOptions(),
+            {
+                "attributes": ["race", "gender", "religion", "disability", "sexuality"],
+                "groups": [
+                    "WM160",
+                    "WM161",
+                    "WM162",
+                    "WM164",
+                    "WM177",
+                    "WM264",
+                    "WM393",
+                    "WM380",
+                    "WM276",
+                    "WM267",
+                    "WM263",
+                    "WM261",
+                ],
+            },
+        )
 
 
 if __name__ == "__main__":
-    print("Enter test database url endpoint")
-    PGHOST = "ep-weathered-cloud-790588.eu-central-1.aws.neon.tech"
     unittest.main()
